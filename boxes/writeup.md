@@ -86,7 +86,7 @@ Password : raykayjay9
 ### SSH
 #
 
-This can be used to access SSH on port 22 identified on our port scan. 
+This can be used to access SSH on port 22 identified on our port scan as user jkr and access the user flag. 
 
 ```bash
 ssh jkr@10.129.229.158                 

@@ -29,7 +29,17 @@ Service detection performed. Please report any incorrect results at https://nmap
 #
 
 Retro style website on port 80 talking about DDoS protection
+
 ![image](https://github.com/user-attachments/assets/c86b97da-7c2b-4045-93a4-6e59e4965a39)
 
 Visiting key pages such as robots.txt gave the following directory in the Disallow list: /writeup/
+
 ![image](https://github.com/user-attachments/assets/8ac080cd-bab5-417d-b1ad-0dae52a77827)
+
+The source code shows this is running [CMS Made Simple](https://www.cmsmadesimple.org/), an open source Content Management System. 
+
+```html
+<base href="http://10.129.229.158/writeup/" />
+<meta name="Generator" content="CMS Made Simple - Copyright (C) 2004-2019. All rights reserved." />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+```

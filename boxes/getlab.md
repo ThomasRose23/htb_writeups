@@ -56,7 +56,7 @@ After registering an account, the help page displays the current version install
 
 This version has a prominant vulnerability: **[CVE-2023-2825](https://www.getastra.com/blog/vulnerability/cve-2023-2825/#:~:text=About%20CVE%2D2023%2D2825,and%20Enterprise%20Edition%20version%2016.0.)**
 
-This vulnrability is a Path Traversal vulnerability, it requirews you to create 10 nested group and then create a propject in the final group. In this group you can raise an issue with an attachment, the response to this request will give you the file path for the upload, this is where the path traversal vulnerability lies. 
+This vulnerability is a Path Traversal vulnerability, it requirews you to create 10 nested group and then create a propject in the final group. In this group you can raise an issue with an attachment, the response to this request will give you the file path for the upload, this is where the path traversal vulnerability lies. 
 
 The followin 2 guides were used to exploit this vulnerability:
 [Juniper Guide](https://blogs.juniper.net/en-us/threat-research/cve-2023-2825-gitlab-arbitrary-path-traversal-vulnerability)

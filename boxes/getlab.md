@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/c6d1211d-8119-43f3-b7b3-2aadeb255fd8)![image](https://github.com/user-attachments/assets/61a2193a-1fb9-4e90-bde8-1712eb485257)# Writeup
+# Writeup
 
 # Enumeration
 ---

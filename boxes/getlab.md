@@ -5,9 +5,13 @@
 ### Nmap
 #
 
-sudo nmap -v -sS -sV -sC -T4 -p- -oA getbash-tcp-fullportscan 10.129.229.69
+TCP scan of all ports, including default scripts.
 
 ```bash
+# Command
+sudo nmap -v -sS -sV -sC -T4 -p- -oA getbash-tcp-fullportscan 10.129.229.69
+
+# Output
 # Nmap 7.94SVN scan initiated Mon Dec 16 11:33:36 2024 as: nmap -v -sS -sV -sC -T4 -p- -oA getbash-tcp-fullportscan 10.129.229.69
 Nmap scan report for 10.129.229.69
 Host is up (0.050s latency).

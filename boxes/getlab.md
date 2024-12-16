@@ -62,6 +62,9 @@ The followin 2 guides were used to exploit this vulnerability:
 [Juniper Guide](https://blogs.juniper.net/en-us/threat-research/cve-2023-2825-gitlab-arbitrary-path-traversal-vulnerability)
 [Occamsec Guide](https://occamsec.com/exploit-for-cve-2023-2825/)
 
+A public PoC can be found here:
+[Public Exploit PoC](https://github.com/Occamsec/CVE-2023-2825)
+
 A minimum of 10 groups are needed, this is the number needed to reach the base directory, this is because on a standard Gitlab install, file attachments are uploaded to `/var/opt/gitlab/gitlab-rails/uploads/@hashed/<a>/<b>/<secret>/<secret>/<file>`. I'm assuming there is a rule in the code allowing you to traverse the number of groups back. The 10 groups and project can be seen below:
 
 ![image](https://github.com/user-attachments/assets/b3b04139-ff2d-4887-9935-b53aace61a44)
@@ -88,4 +91,4 @@ This traverses to the base directory and accesses /etc/passwd:
 
 ![image](https://github.com/user-attachments/assets/02fad883-6a92-4b18-958f-3d16d518b900)
 
-
+We can now use this 

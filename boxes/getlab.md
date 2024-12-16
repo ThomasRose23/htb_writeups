@@ -1,4 +1,4 @@
-# Writeup
+![image](https://github.com/user-attachments/assets/c6d1211d-8119-43f3-b7b3-2aadeb255fd8)![image](https://github.com/user-attachments/assets/61a2193a-1fb9-4e90-bde8-1712eb485257)# Writeup
 
 # Enumeration
 ---
@@ -45,3 +45,47 @@ Read data files from: /usr/bin/../share/nmap
 Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
 # Nmap done at Mon Dec 16 11:34:12 2024 -- 1 IP address (1 host up) scanned in 36.71 seconds
 ```
+
+# HTTP (Port 80)
+
+Port 80 on this box is hosting GitLab, I create an account so I can access more of the application before browsing the site. 
+
+After registering an account, the help page displays the current version installed on this machine: v16.0.0.
+
+![image](https://github.com/user-attachments/assets/a7ac5104-a772-46bb-9880-4d69b2bd56e8)
+
+This version has a prominant vulnerability: **[CVE-2023-2825](https://www.getastra.com/blog/vulnerability/cve-2023-2825/#:~:text=About%20CVE%2D2023%2D2825,and%20Enterprise%20Edition%20version%2016.0.)**
+
+This vulnrability is a Path Traversal vulnerability, it requirews you to create 10 nested group and then create a propject in the final group. In this group you can raise an issue with an attachment, the response to this request will give you the file path for the upload, this is where the path traversal vulnerability lies. 
+
+The followin 2 guides were used to exploit this vulnerability:
+[Juniper Guide](https://blogs.juniper.net/en-us/threat-research/cve-2023-2825-gitlab-arbitrary-path-traversal-vulnerability)
+[Occamsec Guide](https://occamsec.com/exploit-for-cve-2023-2825/)
+
+A minimum of 10 groups are needed, this is the number needed to reach the base directory, this is because on a standard Gitlab install, file attachments are uploaded to `/var/opt/gitlab/gitlab-rails/uploads/@hashed/<a>/<b>/<secret>/<secret>/<file>`. I'm assuming there is a rule in the code allowing you to traverse the number of groups back. The 10 groups and project can be seen below:
+
+![image](https://github.com/user-attachments/assets/b3b04139-ff2d-4887-9935-b53aace61a44)
+
+From here I can upload anydocument to an issue on that project and see in the response the file path.
+
+```text
+"note":"[testDoc.txt](/uploads/b5b4ddeeccb3365ce8ca8b9fa5b31900/testDoc.txt)
+```
+
+I can append this to the URL to view the file, the full URL in this example would be:
+
+```text
+http://<ip>/group-1/group-2/group-3/group-4/group-5/group-6/group-7/group-8/group-9/group-10/group-11/project-2/uploads/b5b4ddeeccb3365ce8ca8b9fa5b31900/testDoc.txt
+```
+
+It is this URL I can exploit, by using path traversal to access files instead of test Doc.txt. The rule in this exploit is to traverse the number of groups + 1, in this case that will be 11. Forward slashes must also be URL encoded. The full attack URL ends up:
+
+```text
+http://<ip>/group-1/group-2/group-3/group-4/group-5/group-6/group-7/group-8/group-9/group-10/group-11/project-2/uploads/b5b4ddeeccb3365ce8ca8b9fa5b31900/..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2Fetc%2Fpasswd
+```
+
+This traverses to the base directory and accesses /etc/passwd:
+
+![image](https://github.com/user-attachments/assets/02fad883-6a92-4b18-958f-3d16d518b900)
+
+

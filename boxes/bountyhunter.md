@@ -8,7 +8,10 @@
 TCP scan of all ports, including default scripts.
 
 ```bash
+# Command
 nmap -v -sS -sV -sC -T4 -p- -oA bountyhunter-full-tcp 10.129.95.166
+
+# Results
 Nmap scan report for 10.129.95.166
 Host is up (0.031s latency).
 Not shown: 65533 closed tcp ports (reset)

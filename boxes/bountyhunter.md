@@ -86,7 +86,7 @@ After encoding and resubmitting, I was able to view the /etc/passwd file, see sc
 
 I could now start looking for more interesting data on the system. 
 
-One file we target as this is php is the db.php file, we will need to base64 encode this in a PHP wrapper to avoid bad characters, see on Payload all the Things [here](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/XXE%20Injection#php-wrapper-inside-xxe).
+We can now start targetting sensitive files on the target, one we could go after in php is the db.php file, we will need to base64 encode this in a PHP wrapper to avoid bad characters, see on Payload all the Things [here](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/XXE%20Injection#php-wrapper-inside-xxe).
 
 The payload to get this ends up as:
 
@@ -117,3 +117,8 @@ $testuser = "test";
 ?>
 ```
 
+Spraying this password against usersnames discovered earlier in the /etc/passwd file we are able to log into the development account on the box using the password from db.php. The screenshot below shows this as well as the user flag from */home/development/flag.txt*.
+
+![image](https://github.com/user-attachments/assets/b6e83fc7-8d1f-44cf-942c-3f0b4fd6dfd6)
+
+Privilege Escelation to follow. 

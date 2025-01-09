@@ -43,6 +43,10 @@ Service detection performed. Please report any incorrect results at https://nmap
 # Nmap done at Thu Jan  9 08:37:30 2025 -- 1 IP address (1 host up) scanned in 42.89 seconds
 ```
 
-# HTTP (Port 80)
-#
+# HTTP (Port 8080)
 
+There are 2 web ports open on the machine, the first of which is port 8080, this is running [Apache Spark](https://spark.apache.org/), an Apache engine for data anlytics. 
+
+![image](https://github.com/user-attachments/assets/ebe7ccb9-23d9-402f-88cb-5b4947416071)
+
+The version of Apache Spark running can be seen in the top left next to the logo, the version in use is 3.0.3. 

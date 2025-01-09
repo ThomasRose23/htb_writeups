@@ -43,4 +43,6 @@ Service detection performed. Please report any incorrect results at https://nmap
 # Nmap done at Thu Jan  9 08:37:30 2025 -- 1 IP address (1 host up) scanned in 42.89 seconds
 ```
 
-# 
+# HTTP (Port 80)
+#
+

